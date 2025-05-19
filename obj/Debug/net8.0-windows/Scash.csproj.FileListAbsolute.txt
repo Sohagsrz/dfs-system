@@ -107,3 +107,4 @@ C:\Users\X1 YOGA\source\repos\Scash\Scash\obj\Debug\net8.0-windows\Scash.Forms.R
 C:\Users\X1 YOGA\source\repos\Scash\Scash\obj\Debug\net8.0-windows\Scash.Forms.RegistrationForm.resources
 C:\Users\X1 YOGA\source\repos\Scash\Scash\obj\Debug\net8.0-windows\Scash.Forms.TransactionForm.resources
 C:\Users\X1 YOGA\source\repos\Scash\Scash\obj\Debug\net8.0-windows\Scash.Properties.Resources.resources
+C:\Users\X1 YOGA\source\repos\Scash\Scash\obj\Debug\net8.0-windows\Scash.sourcelink.json

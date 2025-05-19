@@ -40,9 +40,11 @@ namespace Scash.Forms
             // 
             // lblTitle
             // 
+            lblTitle.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             lblTitle.AutoSize = true;
             lblTitle.BackColor = SystemColors.Highlight;
-            lblTitle.BorderStyle = BorderStyle.Fixed3D;
+            lblTitle.BorderStyle = BorderStyle.FixedSingle;
+            lblTitle.Enabled = false;
             lblTitle.FlatStyle = FlatStyle.System;
             lblTitle.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
             lblTitle.ForeColor = Color.Snow;
@@ -72,6 +74,7 @@ namespace Scash.Forms
             lblPassword.AutoSize = true;
             lblPassword.BackColor = SystemColors.Highlight;
             lblPassword.Font = new Font("Segoe UI", 10F);
+            lblPassword.ForeColor = Color.Snow;
             lblPassword.Location = new Point(348, 208);
             lblPassword.Margin = new Padding(4, 0, 4, 0);
             lblPassword.Name = "lblPassword";
@@ -100,6 +103,7 @@ namespace Scash.Forms
             // 
             // btnLogin
             // 
+            btnLogin.BackColor = SystemColors.ControlLight;
             btnLogin.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
             btnLogin.Location = new Point(391, 292);
             btnLogin.Margin = new Padding(4, 5, 4, 5);
@@ -107,19 +111,21 @@ namespace Scash.Forms
             btnLogin.Size = new Size(286, 58);
             btnLogin.TabIndex = 5;
             btnLogin.Text = "Login";
-            btnLogin.UseVisualStyleBackColor = true;
+            btnLogin.UseVisualStyleBackColor = false;
             btnLogin.Click += btnLogin_Click;
             // 
             // btnRegister
             // 
-            btnRegister.Font = new Font("Segoe UI", 9F);
+            btnRegister.BackColor = Color.Red;
+            btnRegister.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnRegister.ForeColor = Color.Snow;
             btnRegister.Location = new Point(391, 367);
             btnRegister.Margin = new Padding(4, 5, 4, 5);
             btnRegister.Name = "btnRegister";
             btnRegister.Size = new Size(286, 47);
             btnRegister.TabIndex = 6;
             btnRegister.Text = "Register New Account";
-            btnRegister.UseVisualStyleBackColor = true;
+            btnRegister.UseVisualStyleBackColor = false;
             btnRegister.Click += btnRegister_Click;
             // 
             // LoginForm
