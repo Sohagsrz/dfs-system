@@ -17,5 +17,10 @@ namespace Scash.Forms
             _transactionService = transactionService;
             InitializeComponent();
         }
+
+        private void AgentDashboardForm_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 } 

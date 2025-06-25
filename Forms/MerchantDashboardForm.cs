@@ -17,5 +17,10 @@ namespace Scash.Forms
             _transactionService = transactionService;
             InitializeComponent();
         }
+
+        private void MerchantDashboardForm_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 } 

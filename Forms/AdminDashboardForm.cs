@@ -20,12 +20,23 @@ namespace Scash.Forms
             this.Text = $"Admin Dashboard - {_user.FullName}";
             this.Width = 600;
             this.Height = 400;
-            btnManageUsers = new Button { Text = "Manage Users", Left = 30, Top = 30, Width = 200 };
-            btnManageUsers.Click += BtnManageUsers_Click;
-            this.Controls.Add(btnManageUsers);
+            //btnManageUsers = new Button { Text = "Manage Users", Left = 30, Top = 30, Width = 200 };
+            //btnManageUsers.Click += BtnManageUsers_Click;
+            //this.Controls.Add(btnManageUsers);
         }
 
-        private void BtnManageUsers_Click(object sender, System.EventArgs e)
+        //private void BtnManageUsers_Click(object sender, System.EventArgs e)
+        //{
+        //    var form = new UserManagementForm(_userService);
+        //    form.ShowDialog();
+        //}
+
+        private void AdminDashboardForm_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
         {
             var form = new UserManagementForm(_userService);
             form.ShowDialog();

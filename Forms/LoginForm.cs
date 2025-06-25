@@ -42,7 +42,7 @@ namespace Scash.Forms
                 if (user != null)
                 {
                     MessageBox.Show("Login successful!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    // Open appropriate dashboard based on user role
+                    
                     Form dashboard = null;
                     switch (user.Role)
                     {
@@ -103,6 +103,11 @@ namespace Scash.Forms
         }
 
         private void LoginForm_Load_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtUsername_TextChanged(object sender, EventArgs e)
         {
 
         }

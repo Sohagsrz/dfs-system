@@ -22,17 +22,37 @@ namespace Scash.Forms
 
         private void InitializeComponent()
         {
-            this.Text = "User Management";
-            this.Width = 900;
-            this.Height = 500;
-            this.StartPosition = FormStartPosition.CenterScreen;
-
-            dgvUsers = new DataGridView { Left = 10, Top = 10, Width = 860, Height = 400, ReadOnly = true, AllowUserToAddRows = false, SelectionMode = DataGridViewSelectionMode.FullRowSelect };
-            btnRefresh = new Button { Text = "Refresh", Left = 10, Top = 420, Width = 100 };
-            btnRefresh.Click += (s, e) => LoadUsers();
-
-            this.Controls.Add(dgvUsers);
-            this.Controls.Add(btnRefresh);
+            dgvUsers = new DataGridView();
+            btnRefresh = new Button();
+            ((System.ComponentModel.ISupportInitialize)dgvUsers).BeginInit();
+            SuspendLayout();
+            // 
+            // dgvUsers
+            // 
+            dgvUsers.ColumnHeadersHeight = 29;
+            dgvUsers.Location = new Point(0, 0);
+            dgvUsers.Name = "dgvUsers";
+            dgvUsers.RowHeadersWidth = 51;
+            dgvUsers.Size = new Size(240, 150);
+            dgvUsers.TabIndex = 0;
+            // 
+            // btnRefresh
+            // 
+            btnRefresh.Location = new Point(0, 0);
+            btnRefresh.Name = "btnRefresh";
+            btnRefresh.Size = new Size(75, 23);
+            btnRefresh.TabIndex = 1;
+            // 
+            // UserManagementForm
+            // 
+            ClientSize = new Size(795, 453);
+            Controls.Add(dgvUsers);
+            Controls.Add(btnRefresh);
+            Name = "UserManagementForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "User Management";
+            ((System.ComponentModel.ISupportInitialize)dgvUsers).EndInit();
+            ResumeLayout(false);
         }
 
         private async void LoadUsers()

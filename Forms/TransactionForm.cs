@@ -14,6 +14,9 @@ namespace Scash.Forms
         private TextBox txtAmount;
         private TextBox txtRecipientUsername;
         private Button btnExecute;
+        private Label lblType;
+        private Label lblAmount;
+        private Label lblRecipient;
         private Label lblBalance;
 
         public TransactionForm(User currentUser, UserService userService, TransactionService transactionService)
@@ -27,45 +30,99 @@ namespace Scash.Forms
 
         private void InitializeComponent()
         {
-            this.Text = "Transaction";
-            this.Width = 400;
-            this.Height = 400;
-            this.FormBorderStyle = FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-            this.StartPosition = FormStartPosition.CenterScreen;
-
-            // Balance Label
-            lblBalance = new Label { Text = "Balance: $0.00", Left = 20, Top = 20, Width = 200 };
-            this.Controls.Add(lblBalance);
-
-            // Transaction Type
-            Label lblType = new Label { Text = "Transaction Type:", Left = 20, Top = 50, Width = 120 };
-            cmbTransactionType = new ComboBox { Left = 150, Top = 50, Width = 200, DropDownStyle = ComboBoxStyle.DropDownList };
-            this.Controls.AddRange(new Control[] { lblType, cmbTransactionType });
-
-            // Amount
-            Label lblAmount = new Label { Text = "Amount:", Left = 20, Top = 90, Width = 120 };
-            txtAmount = new TextBox { Left = 150, Top = 90, Width = 200 };
-            this.Controls.AddRange(new Control[] { lblAmount, txtAmount });
-
-            // Recipient (for Send Money and Payment)
-            Label lblRecipient = new Label { Text = "Recipient Username:", Left = 20, Top = 130, Width = 120 };
-            txtRecipientUsername = new TextBox { Left = 150, Top = 130, Width = 200 };
-            this.Controls.AddRange(new Control[] { lblRecipient, txtRecipientUsername });
-
-            // Execute Button
-            btnExecute = new Button { Text = "Execute Transaction", Left = 150, Top = 170, Width = 200 };
+            lblBalance = new Label();
+            lblType = new Label();
+            cmbTransactionType = new ComboBox();
+            lblAmount = new Label();
+            txtAmount = new TextBox();
+            lblRecipient = new Label();
+            txtRecipientUsername = new TextBox();
+            btnExecute = new Button();
+            SuspendLayout();
+            // 
+            // lblBalance
+            // 
+            lblBalance.Location = new Point(0, 0);
+            lblBalance.Name = "lblBalance";
+            lblBalance.Size = new Size(100, 23);
+            lblBalance.TabIndex = 0;
+            // 
+            // lblType
+            // 
+            lblType.Location = new Point(0, 0);
+            lblType.Name = "lblType";
+            lblType.Size = new Size(100, 23);
+            lblType.TabIndex = 1;
+            // 
+            // cmbTransactionType
+            // 
+            cmbTransactionType.Location = new Point(0, 0);
+            cmbTransactionType.Name = "cmbTransactionType";
+            cmbTransactionType.Size = new Size(121, 28);
+            cmbTransactionType.TabIndex = 2;
+            cmbTransactionType.SelectedIndexChanged += cmbTransactionType_SelectedIndexChanged;
+            // 
+            // lblAmount
+            // 
+            lblAmount.Location = new Point(0, 0);
+            lblAmount.Name = "lblAmount";
+            lblAmount.Size = new Size(100, 23);
+            lblAmount.TabIndex = 3;
+            // 
+            // txtAmount
+            // 
+            txtAmount.Location = new Point(0, 0);
+            txtAmount.Name = "txtAmount";
+            txtAmount.Size = new Size(100, 27);
+            txtAmount.TabIndex = 4;
+            // 
+            // lblRecipient
+            // 
+            lblRecipient.Location = new Point(0, 0);
+            lblRecipient.Name = "lblRecipient";
+            lblRecipient.Size = new Size(100, 23);
+            lblRecipient.TabIndex = 5;
+            // 
+            // txtRecipientUsername
+            // 
+            txtRecipientUsername.Location = new Point(0, 0);
+            txtRecipientUsername.Name = "txtRecipientUsername";
+            txtRecipientUsername.Size = new Size(100, 27);
+            txtRecipientUsername.TabIndex = 6;
+            // 
+            // btnExecute
+            // 
+            btnExecute.Location = new Point(0, 0);
+            btnExecute.Name = "btnExecute";
+            btnExecute.Size = new Size(75, 23);
+            btnExecute.TabIndex = 7;
             btnExecute.Click += BtnExecute_Click;
-            this.Controls.Add(btnExecute);
-
-            // Load transaction types based on user role
-            LoadTransactionTypes();
+            // 
+            // TransactionForm
+            // 
+            ClientSize = new Size(495, 409);
+            Controls.Add(lblBalance);
+            Controls.Add(lblType);
+            Controls.Add(cmbTransactionType);
+            Controls.Add(lblAmount);
+            Controls.Add(txtAmount);
+            Controls.Add(lblRecipient);
+            Controls.Add(txtRecipientUsername);
+            Controls.Add(btnExecute);
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            Name = "TransactionForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Transaction";
+            Load += TransactionForm_Load;
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         private void LoadTransactionTypes()
         {
             cmbTransactionType.Items.Clear();
-            
+
             // All users can check balance
             cmbTransactionType.Items.Add("Balance Inquiry");
 
@@ -186,6 +243,16 @@ namespace Scash.Forms
             {
                 MessageBox.Show($"Transaction failed: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void cmbTransactionType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void TransactionForm_Load(object sender, EventArgs e)
+        {
+
         }
     }
 } 
