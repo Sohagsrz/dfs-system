@@ -19,13 +19,14 @@ namespace Scash.Forms
             _transactionService = transactionService;
             InitializeComponent();
             UpdateBalance();
+            welcomeTxt.Text = "Welcome,"+_user.FullName;
         }
 
         private void UpdateBalance()
         {
             Console.WriteLine(_user);
-            //lblBalance.Text = $"Balance: ${_user.Balance}";
-            lblBalance.Text = "Balance ";
+            lblBalance.Text = $"Balance: ${_user.Balance}";
+            //lblBalance.Text = "Balance ";
         }
 
         private void BtnTransaction_Click(object sender, System.EventArgs e)

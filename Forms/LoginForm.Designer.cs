@@ -149,6 +149,7 @@ namespace Scash.Forms
             Name = "LoginForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Login";
+            Load += LoginForm_Load_1;
             ResumeLayout(false);
             PerformLayout();
         }

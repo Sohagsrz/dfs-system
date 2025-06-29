@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Scash")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+158d42065f973920de0a61f08f66848158a28ad6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+77566168d2a572733ebd1dd5c82f9c40b1705449")]
 [assembly: System.Reflection.AssemblyProductAttribute("Scash")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Scash")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

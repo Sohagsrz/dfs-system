@@ -8,7 +8,7 @@ namespace Scash.Forms
             btnTransaction = new Button();
             panel1 = new Panel();
             listBox1 = new ListBox();
-            label1 = new Label();
+            welcomeTxt = new Label();
             label2 = new Label();
             SuspendLayout();
             // 
@@ -57,16 +57,16 @@ namespace Scash.Forms
             listBox1.TabIndex = 3;
             listBox1.SelectedIndexChanged += listBox1_SelectedIndexChanged;
             // 
-            // label1
+            // welcomeTxt
             // 
-            label1.AutoSize = true;
-            label1.Font = new Font("Showcard Gothic", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label1.Location = new Point(433, 9);
-            label1.Name = "label1";
-            label1.Size = new Size(197, 23);
-            label1.TabIndex = 4;
-            label1.Text = "Welcome, Mr Sohag";
-            label1.Click += label1_Click_1;
+            welcomeTxt.AutoSize = true;
+            welcomeTxt.Font = new Font("Showcard Gothic", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            welcomeTxt.Location = new Point(433, 9);
+            welcomeTxt.Name = "welcomeTxt";
+            welcomeTxt.Size = new Size(197, 23);
+            welcomeTxt.TabIndex = 4;
+            welcomeTxt.Text = "Welcome, Mr Sohag";
+            welcomeTxt.Click += label1_Click_1;
             // 
             // label2
             // 
@@ -82,7 +82,7 @@ namespace Scash.Forms
             AutoSize = true;
             ClientSize = new Size(914, 511);
             Controls.Add(label2);
-            Controls.Add(label1);
+            Controls.Add(welcomeTxt);
             Controls.Add(btnTransaction);
             Controls.Add(lblBalance);
             Controls.Add(listBox1);
@@ -98,7 +98,7 @@ namespace Scash.Forms
         private Button btnTransaction;
         private Panel panel1;
         private ListBox listBox1;
-        private Label label1;
+        private Label welcomeTxt;
         private Label label2;
     }
 } 
