@@ -96,15 +96,5 @@ namespace Scash.Forms
                 MessageBox.Show($"Error loading login form: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
-        private void lblTitle_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void LoginForm_Load_1(object sender, EventArgs e)
-        {
-
-        }
     }
 } 

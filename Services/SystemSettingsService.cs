@@ -22,14 +22,15 @@ namespace Scash.Services
             return setting?.Value;
         }
 
-        public async Task<T> GetSetting<T>(string key, T defaultValue = default)
+        public async Task<T> GetSetting<T>(string key, T defaultValue = default(T))
         {
-            var value = await GetSetting(key);
-            if (string.IsNullOrEmpty(value)) return defaultValue;
+            var setting = await _context.SystemSettings.FirstOrDefaultAsync(s => s.Key == key);
+            if (setting == null)
+                return defaultValue;
 
             try
             {
-                return (T)Convert.ChangeType(value, typeof(T));
+                return (T)Convert.ChangeType(setting.Value, typeof(T));
             }
             catch
             {
@@ -66,12 +67,15 @@ namespace Scash.Services
             var defaultSettings = new Dictionary<string, (string Value, string Description)>
             {
                 { SystemSettingKeys.SendMoneyFee, ("0.50", "Fee for sending money (percentage)") },
+                { SystemSettingKeys.TransactionFee, ("0.50", "General transaction fee (percentage)") },
                 { SystemSettingKeys.CashOutFee, ("1.00", "Fee for cash out (percentage)") },
                 { SystemSettingKeys.MerchantPaymentFee, ("0.25", "Fee for merchant payments (percentage)") },
                 { SystemSettingKeys.MobileRechargeFee, ("0.00", "Fee for mobile recharge (percentage)") },
                 { SystemSettingKeys.UtilityBillFee, ("0.00", "Fee for utility bill payments (percentage)") },
+                { SystemSettingKeys.QRPaymentFee, ("0.25", "Fee for QR payments (percentage)") },
                 { SystemSettingKeys.AgentCashInCommission, ("1.00", "Commission for cash in (percentage)") },
                 { SystemSettingKeys.AgentCashOutCommission, ("1.00", "Commission for cash out (percentage)") },
+                { SystemSettingKeys.AgentCommission, ("1.00", "General agent commission (percentage)") },
                 { SystemSettingKeys.PersonalDailyLimit, ("1000.00", "Daily transaction limit for personal accounts") },
                 { SystemSettingKeys.PersonalMonthlyLimit, ("25000.00", "Monthly transaction limit for personal accounts") },
                 { SystemSettingKeys.MerchantDailyLimit, ("50000.00", "Daily transaction limit for merchants") },

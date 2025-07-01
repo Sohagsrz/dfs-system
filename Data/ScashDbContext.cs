@@ -52,9 +52,9 @@ namespace Scash.Data
             // TransactionHistory configuration
             modelBuilder.Entity<TransactionHistory>(entity =>
             {
-                entity.HasIndex(t => t.ReferenceNumber).IsUnique();
                 entity.Property(t => t.Amount).HasPrecision(18, 2);
                 entity.Property(t => t.Balance).HasPrecision(18, 2);
+                entity.Property(t => t.Commission).HasPrecision(18, 2);
                 entity.HasOne(t => t.User)
                     .WithMany()
                     .HasForeignKey(t => t.UserId)

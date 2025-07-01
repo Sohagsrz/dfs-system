@@ -58,28 +58,42 @@ namespace Scash
 
         private static void ConfigureServices(IServiceCollection services)
         {
-            // Add DbContext
+            // Add DbContext with better connection handling
             services.AddDbContext<ScashDbContext>(options =>
             {
                 try
                 {
-                    options.UseMySql(
-                        "Server=localhost;Database=scash_db;User=root;Password=;",
-                        ServerVersion.AutoDetect("Server=localhost;Database=scash_db;User=root;Password=;")
-                    );
+                    // Simple connection string for MySQL
+                    var connectionString = "Server=localhost;Database=scash_db;User=root;Password=;Port=3306;" +
+                                          "CharSet=utf8mb4;Convert Zero Datetime=True;Allow User Variables=True;" +
+                                          "Connection Timeout=30;Command Timeout=30;";
+                    
+                    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+                    
                     Console.WriteLine("Database context configured successfully.");
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Error configuring database context: {ex}");
+                    
+                    // Show user-friendly error message
+                    var errorMessage = "Database connection failed. Please ensure:\n" +
+                                     "1. MySQL server is running\n" +
+                                     "2. MySQL is accessible on localhost:3306\n" +
+                                     "3. User 'root' has proper permissions\n" +
+                                     "4. Database 'scash_db' exists or can be created\n\n" +
+                                     $"Technical error: {ex.Message}";
+                    
+                    MessageBox.Show(errorMessage, "Database Connection Error", 
+                                   MessageBoxButtons.OK, MessageBoxIcon.Error);
                     throw;
                 }
             });
 
-            // Add Services
-            services.AddScoped<UserService>();
-            services.AddScoped<TransactionService>();
-            services.AddScoped<SystemSettingsService>();
+            // Add Services with Transient lifetime to avoid connection reuse
+            services.AddTransient<UserService>();
+            services.AddTransient<TransactionService>();
+            services.AddTransient<SystemSettingsService>();
 
             // Add Forms
             services.AddTransient<LoginForm>();

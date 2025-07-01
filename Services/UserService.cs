@@ -86,7 +86,15 @@ namespace Scash.Services
             await _context.SaveChangesAsync();
         }
 
-        public Task<Scash.Models.User> GetUserById(int userId) => throw new NotImplementedException();
+        public async Task<User> GetUserById(int userId)
+        {
+            return await _context.Users.FindAsync(userId);
+        }
+
+        public async Task<User> GetUserByUsername(string username)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+        }
 
         public void RegisterUser(User user)
         {

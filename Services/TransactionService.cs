@@ -62,23 +62,35 @@ namespace Scash.Services
             switch (type)
             {
                 case TransactionType.SendMoney:
-                    fee = amount * await _settingsService.GetSetting<decimal>(SystemSettingKeys.TransactionFee);
+                    fee = amount * (await _settingsService.GetSetting<decimal>(SystemSettingKeys.SendMoneyFee, 0.005m) / 100m);
                     break;
                 case TransactionType.MobileRecharge:
-                    fee = amount * await _settingsService.GetSetting<decimal>(SystemSettingKeys.MobileRechargeFee);
+                    fee = amount * (await _settingsService.GetSetting<decimal>(SystemSettingKeys.MobileRechargeFee, 0m) / 100m);
                     break;
                 case TransactionType.UtilityBillPayment:
-                    fee = amount * await _settingsService.GetSetting<decimal>(SystemSettingKeys.UtilityBillFee);
+                    fee = amount * (await _settingsService.GetSetting<decimal>(SystemSettingKeys.UtilityBillFee, 0m) / 100m);
                     break;
                 case TransactionType.QRPayment:
-                    fee = amount * await _settingsService.GetSetting<decimal>(SystemSettingKeys.QRPaymentFee);
+                    fee = amount * (await _settingsService.GetSetting<decimal>(SystemSettingKeys.QRPaymentFee, 0.0025m) / 100m);
+                    break;
+                case TransactionType.CashIn:
+                    fee = amount * (await _settingsService.GetSetting<decimal>(SystemSettingKeys.AgentCashInCommission, 0.01m) / 100m);
+                    break;
+                case TransactionType.CashOut:
+                    fee = amount * (await _settingsService.GetSetting<decimal>(SystemSettingKeys.CashOutFee, 0.01m) / 100m);
+                    break;
+                case TransactionType.MerchantPayment:
+                    fee = amount * (await _settingsService.GetSetting<decimal>(SystemSettingKeys.MerchantPaymentFee, 0.0025m) / 100m);
+                    break;
+                default:
+                    fee = amount * (await _settingsService.GetSetting<decimal>(SystemSettingKeys.TransactionFee, 0.005m) / 100m);
                     break;
             }
 
             // Calculate commission for agents
             if (sender.Role == UserRole.Agent)
             {
-                commission = amount * await _settingsService.GetSetting<decimal>(SystemSettingKeys.AgentCommission);
+                commission = amount * (await _settingsService.GetSetting<decimal>(SystemSettingKeys.AgentCommission, 0.01m) / 100m);
             }
 
             var totalAmount = amount + fee + commission;
@@ -109,6 +121,9 @@ namespace Scash.Services
 
         public async Task<Transaction> CompleteTransactionAsync(int transactionId)
         {
+            // Ensure we have a fresh context state
+            await _context.Database.CloseConnectionAsync();
+            
             var transaction = await _context.Transactions
                 .Include(t => t.Sender)
                 .Include(t => t.Recipient)
@@ -120,7 +135,6 @@ namespace Scash.Services
             if (transaction.Status != TransactionStatus.Pending)
                 throw new InvalidOperationException("Transaction is not in pending status");
 
-            using var dbTransaction = await _context.Database.BeginTransactionAsync();
             try
             {
                 // Update sender balance
@@ -138,6 +152,8 @@ namespace Scash.Services
                     UserId = transaction.SenderId,
                     TransactionId = transaction.TransactionId,
                     Amount = -(transaction.Amount + transaction.Fee + transaction.Commission),
+                    Balance = transaction.Sender.Balance,
+                    Commission = transaction.Commission,
                     Type = transaction.Type,
                     ReferenceNumber = transaction.ReferenceNumber,
                     Description = transaction.Description,
@@ -151,6 +167,8 @@ namespace Scash.Services
                         UserId = transaction.RecipientId.Value,
                         TransactionId = transaction.TransactionId,
                         Amount = transaction.Amount,
+                        Balance = transaction.Recipient.Balance,
+                        Commission = 0,
                         Type = transaction.Type,
                         ReferenceNumber = transaction.ReferenceNumber,
                         Description = transaction.Description,
@@ -164,14 +182,15 @@ namespace Scash.Services
                 transaction.CompletedAt = DateTime.UtcNow;
 
                 await _context.SaveChangesAsync();
-                await dbTransaction.CommitAsync();
 
                 return transaction;
             }
-            catch
+            catch (Exception ex)
             {
-                await dbTransaction.RollbackAsync();
-                throw;
+                // Reset transaction status on error
+                transaction.Status = TransactionStatus.Failed;
+                await _context.SaveChangesAsync();
+                throw new InvalidOperationException($"Transaction failed: {ex.Message}", ex);
             }
         }
 
@@ -219,11 +238,117 @@ namespace Scash.Services
             return $"TRX{DateTime.UtcNow:yyyyMMddHHmmss}{new Random().Next(1000, 9999)}";
         }
 
-        // Add stubs for legacy methods to avoid build errors
-        public Task<Transaction> SendMoney(int senderId, string recipientUsername, decimal amount) => throw new NotImplementedException();
-        public Task<Transaction> CashIn(int agentId, string recipientUsername, decimal amount) => throw new NotImplementedException();
-        public Task<Transaction> CashOut(int userId, decimal amount) => throw new NotImplementedException();
-        public Task<Transaction> PayMerchant(int senderId, string merchantUsername, decimal amount) => throw new NotImplementedException();
-        public Task<Transaction> WithdrawToBank(int merchantId, decimal amount) => throw new NotImplementedException();
+        public async Task<Transaction> SendMoney(int senderId, string recipientUsername, decimal amount)
+        {
+            var recipient = await _context.Users.FirstOrDefaultAsync(u => u.Username == recipientUsername);
+            if (recipient == null)
+                throw new ArgumentException("Recipient not found");
+
+            if (!recipient.IsActive)
+                throw new InvalidOperationException("Recipient account is inactive");
+            
+            var transaction = await CreateTransactionAsync(senderId, recipient.Id, amount, TransactionType.SendMoney, "Send Money");
+            return await CompleteTransactionAsync(transaction.TransactionId);
+        }
+
+        public async Task<Transaction> CashIn(int agentId, string recipientUsername, decimal amount)
+        {
+            var agent = await _context.Users.FindAsync(agentId);
+            if (agent == null)
+                throw new ArgumentException("Agent not found");
+
+            if (agent.Role != UserRole.Agent)
+                throw new InvalidOperationException("Only agents can perform cash-in operations");
+
+            if (!agent.IsActive)
+                throw new InvalidOperationException("Agent account is inactive");
+
+            var recipient = await _context.Users.FirstOrDefaultAsync(u => u.Username == recipientUsername);
+            if (recipient == null)
+                throw new ArgumentException("Recipient not found");
+
+            if (!recipient.IsActive)
+                throw new InvalidOperationException("Recipient account is inactive");
+
+            // For cash-in, the agent provides the money, so the recipient gets the full amount
+            var transaction = await CreateTransactionAsync(agentId, recipient.Id, amount, TransactionType.CashIn, "Cash In");
+            return await CompleteTransactionAsync(transaction.TransactionId);
+        }
+
+        public async Task<Transaction> CashOut(int userId, decimal amount)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+                throw new ArgumentException("User not found");
+
+            if (!user.IsActive)
+                throw new InvalidOperationException("User account is inactive");
+
+            if (user.IsLocked)
+                throw new InvalidOperationException("User account is locked");
+
+            // For cash-out, the user withdraws money (no recipient)
+            var transaction = await CreateTransactionAsync(userId, null, amount, TransactionType.CashOut, "Cash Out");
+            return await CompleteTransactionAsync(transaction.TransactionId);
+        }
+
+        public async Task<Transaction> PayMerchant(int senderId, string merchantUsername, decimal amount)
+        {
+            var sender = await _context.Users.FindAsync(senderId);
+            if (sender == null)
+                throw new ArgumentException("Sender not found");
+
+            if (!sender.IsActive)
+                throw new InvalidOperationException("Sender account is inactive");
+
+            if (sender.IsLocked)
+                throw new InvalidOperationException("Sender account is locked");
+
+            var merchant = await _context.Users.FirstOrDefaultAsync(u => u.Username == merchantUsername && u.Role == UserRole.Merchant);
+            if (merchant == null)
+                throw new ArgumentException("Merchant not found");
+
+            if (!merchant.IsActive)
+                throw new InvalidOperationException("Merchant account is inactive");
+
+            var transaction = await CreateTransactionAsync(senderId, merchant.Id, amount, TransactionType.MerchantPayment, "Merchant Payment");
+            return await CompleteTransactionAsync(transaction.TransactionId);
+        }
+
+        public async Task<Transaction> WithdrawToBank(int merchantId, decimal amount)
+        {
+            var merchant = await _context.Users.FindAsync(merchantId);
+            if (merchant == null)
+                throw new ArgumentException("Merchant not found");
+
+            if (merchant.Role != UserRole.Merchant)
+                throw new InvalidOperationException("Only merchants can perform bank withdrawals");
+
+            if (!merchant.IsActive)
+                throw new InvalidOperationException("Merchant account is inactive");
+
+            if (merchant.IsLocked)
+                throw new InvalidOperationException("Merchant account is locked");
+
+            var transaction = await CreateTransactionAsync(merchantId, null, amount, TransactionType.BankWithdrawal, "Bank Withdrawal");
+            return await CompleteTransactionAsync(transaction.TransactionId);
+        }
+
+        public async Task<IEnumerable<Transaction>> GetAllTransactionsAsync()
+        {
+            return await _context.Transactions
+                .Include(t => t.Sender)
+                .Include(t => t.Recipient)
+                .OrderByDescending(t => t.CreatedAt)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<TransactionHistory>> GetAllTransactionHistoriesAsync()
+        {
+            return await _context.TransactionHistories
+                .Include(t => t.User)
+                .OrderByDescending(t => t.CreatedAt)
+                .ToListAsync();
+        }
     }
 } 

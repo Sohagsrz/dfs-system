@@ -54,7 +54,6 @@ namespace Scash.Forms
             lblTitle.Size = new Size(199, 47);
             lblTitle.TabIndex = 0;
             lblTitle.Text = "sCash Login";
-            lblTitle.Click += lblTitle_Click;
             // 
             // lblUsername
             // 
@@ -149,7 +148,7 @@ namespace Scash.Forms
             Name = "LoginForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Login";
-            Load += LoginForm_Load_1;
+            Load += LoginForm_Load;
             ResumeLayout(false);
             PerformLayout();
         }
